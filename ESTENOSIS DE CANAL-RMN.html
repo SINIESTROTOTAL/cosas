@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla Interactiva Estenosis Canal Lumbar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #003366; /* Azul oscuro */
+            color: yellow; /* Texto en amarillo */
+        }
+        table, th, td {
+            border: 1px solid yellow; /* Bordes en amarillo */
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #001a33; /* Azul aún más oscuro para el encabezado */
+        }
+    </style>
+</head>
+<body>
+
+<h2>Tabla Interactiva: Estenosis de Canal Lumbar</h2>
+
+<!-- Input para el ID del paciente -->
+<label for="idPaciente">ID del Paciente:</label>
+<input type="text" id="idPaciente" placeholder="Introduce el ID del paciente">
+<br><br>
+
+<table>
+    <thead>
+        <tr>
+            <th>Criterio Clínico</th>
+            <th>Puntuación</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Claudicación neurógena</td>
+            <td>
+                <select id="claudicacion" onchange="calcularPuntuacion()">
+                    <option value="0">No presenta</option>
+                    <option value="1">Leve (síntomas tras caminar >10 min)</option>
+                    <option value="2">Moderada (síntomas tras caminar 5-10 min)</option>
+                    <option value="3">Severa (síntomas tras caminar <5 min)</option>
+                    <option value="4">Muy severa (síntomas al estar de pie o caminar pocos min)</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Dolor irradiado a extremidades inferiores</td>
+            <td>
+                <select id="dolorIrradiado" onchange="calcularPuntuacion()">
+                    <option value="0">No hay dolor irradiado</option>
+                    <option value="1">Unilateral leve</option>
+                    <option value="2">Unilateral severo o bilateral leve</option>
+                    <option value="3">Bilateral severo (con debilidad)</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Mejoría en flexión</td>
+            <td>
+                <select id="mejoraFlexion" onchange="calcularPuntuacion()">
+                    <option value="0">No mejora</option>
+                    <option value="1">Mejoría leve</option>
+                    <option value="2">Mejoría moderada</option>
+                    <option value="3">Mejoría casi completa</option>
+                    <option value="4">Síntomas desaparecen con flexión</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Empeoramiento con la extensión</td>
+            <td>
+                <select id="empeoramientoExtension" onchange="calcularPuntuacion()">
+                    <option value="0">No hay empeoramiento</option>
+                    <option value="1">Empeoramiento leve</option>
+                    <option value="2">Empeoramiento moderado</option>
+                    <option value="3">Empeoramiento severo</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Pérdida progresiva de la función motora o sensorial</td>
+            <td>
+                <select id="perdidaFuncion" onchange="calcularPuntuacion()">
+                    <option value="0">No hay pérdida</option>
+                    <option value="1">Leve (no afecta funcionalidad)</option>
+                    <option value="2">Moderada (afecta algunas actividades)</option>
+                    <option value="3">Significativa (limitación funcional evidente)</option>
+                    <option value="4">Severa (parálisis parcial o pérdida completa de sensibilidad)</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Edad</td>
+            <td>
+                <select id="edad" onchange="calcularPuntuacion()">
+                    <option value="0">Menor de 50 años</option>
+                    <option value="1">Entre 50 y 65 años</option>
+                    <option value="2">Mayor de 65 años</option>
+                </select>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Puntuación Total: <span id="puntuacionTotal">0</span></h3>
+
+<!-- Botón para almacenar la primera puntuación -->
+<button onclick="almacenarPrimeraPuntuacion()">Almacenar primera puntuación</button>
+
+<!-- Botón para calcular la segunda puntuación -->
+<button onclick="calcularSegundaPuntuacion()">Calcular segunda puntuación y comparar</button>
+
+<!-- Botón para reiniciar la puntuación -->
+<button onclick="reiniciarFormulario()">Reiniciar para nuevo paciente</button>
+
+<!-- Interpretación de la puntuación -->
+<div id="interpretacion" style="border: 1px solid yellow; padding: 10px; margin-top: 20px; color: yellow; background-color: #001a33;">
+    <p><b>Interpretación:</b></p>
+    <p><span id="mensaje"></span></p>
+</div>
+
+<script>
+    let primeraPuntuacion = {};
+
+    // Función para calcular la puntuación total
+    function calcularPuntuacion() {
+        let claudicacion = parseInt(document.getElementById("claudicacion").value);
+        let dolorIrradiado = parseInt(document.getElementById("dolorIrradiado").value);
+        let mejoraFlexion = parseInt(document.getElementById("mejoraFlexion").value);
+        let empeoramientoExtension = parseInt(document.getElementById("empeoramientoExtension").value);
+        let perdidaFuncion = parseInt(document.getElementById("perdidaFuncion").value);
+        let edad = parseInt(document.getElementById("edad").value);
+
+        let puntuacionTotal = claudicacion + dolorIrradiado + mejoraFlexion + empeoramientoExtension + perdidaFuncion + edad;
+        
+        document.getElementById("puntuacionTotal").innerText = puntuacionTotal;
+
+        let mensaje = "";
+        if (puntuacionTotal <= 5) {
+            mensaje = "0-5 puntos: No se recomienda realizar RM de inmediato.";
+        } else if (puntuacionTotal >= 6 && puntuacionTotal <= 10) {
+            mensaje = "6-10 puntos: Probabilidad moderada de estenosis. Revalorar al paciente en 6 meses y repetir si la puntuación es la misma o mayor.";
+        } else if (puntuacionTotal >= 11 && puntuacionTotal <= 20) {
+            mensaje = "11-20 puntos: Alta probabilidad de estenosis de canal lumbar. Se recomienda realizar una RM para confirmar el diagnóstico.";
+        }
+
+        document.getElementById("mensaje").innerText = mensaje;
+        return puntuacionTotal;
+    }
+
+    // Función para almacenar la primera puntuación
+    function almacenarPrimeraPuntuacion() {
+        let idPaciente = document.getElementById("idPaciente").value;
+        if (idPaciente === "") {
+            alert("Por favor, introduce el ID del paciente.");
+            return;
+        }
+
+        let puntuacion = calcularPuntuacion();
+        primeraPuntuacion[idPaciente] = puntuacion;
+        alert("Primera puntuación almacenada para el paciente " + idPaciente + ": " + puntuacion);
+    }
+
+    // Función para calcular la segunda puntuación y comparar
+    function calcularSegundaPuntuacion() {
+        let idPaciente = document.getElementById("idPaciente").value;
+        if (idPaciente === "") {
+            alert("Por favor, introduce el ID del paciente.");
+            return;
+        }
+
+        if (!primeraPuntuacion.hasOwnProperty(idPaciente)) {
+            alert("No hay ninguna puntuación almacenada para este paciente. Almacena la primera puntuación primero.");
+            return;
+        }
+
+        let segundaPuntuacion = calcularPuntuacion();
+
+        // Comparar la segunda puntuación con la primera
+        if (primeraPuntuacion[idPaciente] >= 6 && primeraPuntuacion[idPaciente] <= 10 && segundaPuntuacion > primeraPuntuacion[idPaciente]) {
+            document.getElementById("mensaje").innerText = "La segunda puntuación es mayor que la primera. Se recomienda realizar una RM.";
+        } else if (primeraPuntuacion[idPaciente] >= 6 && primeraPuntuacion[idPaciente] <= 10 && segundaPuntuacion <= primeraPuntuacion[idPaciente]) {
+            document.getElementById("mensaje").innerText = "No hay incremento significativo en la segunda puntuación. Continuar con el seguimiento.";
+        } else {
+            document.getElementById("mensaje").innerText = "Evaluación de rutina, siga el plan clínico.";
+        }
+    }
+
+    // Función para reiniciar el formulario y empezar con otro paciente
+    function reiniciarFormulario() {
+        document.getElementById("idPaciente").value = "";
+        document.getElementById("claudicacion").value = "0";
+        document.getElementById("dolorIrradiado").value = "0";
+        document.getElementById("mejoraFlexion").value = "0";
+        document.getElementById("empeoramientoExtension").value = "0";
+        document.getElementById("perdidaFuncion").value = "0";
+        document.getElementById("edad").value = "0";
+        document.getElementById("puntuacionTotal").innerText = "0";
+        document.getElementById("mensaje").innerText = "";
+        alert("Formulario reiniciado para un nuevo paciente.");
+    }
+</script>
+
+</body>
+</html>
